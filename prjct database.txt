@@ -1,0 +1,146 @@
+use Sep19CHN
+create schema EHS
+
+------------------------------------User table--------------------------------------
+create table EHS.Users
+(
+UserName varchar(25) primary key,
+UserPassword varchar(25) not null 
+
+)
+
+----------------------------------User Proc--------------------------------------------
+alter proc EHS.usp_AddUsers
+
+@UserName varchar(25),
+@Password varchar(25)
+as
+begin 
+insert into EHS.Users values(@UserName,@Password)
+end
+
+------------------------------------------------get User---------------------------------------------
+create proc EHS.usp_GetUsers
+as
+begin
+select UserName from EHS.Users
+end
+
+
+select * from EHS.Users
+
+
+-----------------------------------State table-----------------------------------------------
+create table EHS.State
+(
+StateId int identity(1,1) primary key, 
+StateName varchar(30)
+)
+
+CREATE proc EHS. usp_DisplayState
+AS
+BEGIN
+select * from EHS.State
+END
+
+exec  EHS.usp_DisplayState
+
+
+
+-----------------------------------City table-----------------------------------------------
+create table EHS.City
+(
+
+CityId int identity(1,1) primary key, 
+CityName varchar(50) not null, 
+StateId int not null,
+Foreign key(StateId) references  EHMS.State(StateId)
+)
+
+select *from EHS.City
+insert into EHS.City VALUES('Vizag',1)
+
+
+
+----------------------------Seller----------------------------------------------------------------------------------
+create table EHS.Seller
+(
+SellerId int identity primary key, 
+UserName varchar(25) not null, 
+FirstName varchar(25) not null, 
+LastName varchar(25), 
+DateofBirth date not null, 
+PhoneNo varchar(10) not null, 
+Address varchar(250) not null, 
+StateId int,  
+CityId int,  
+EmailId varchar(50) not null,
+Foreign key(StateId) references  EHS.State(StateId),
+Foreign key(CityId) references  EHS.City(CityId)
+)
+
+alter proc EHS.usp_AddSeller
+
+ @UserName varchar(25),
+ @FirstName varchar(25),
+ @LastName varchar(25),
+ @DateofBirth date,
+ @Address varchar(250),
+ @PhoneNo varchar(10),
+ @StateId int,
+ @CityId int,
+ @EmailId varchar(50)
+ as
+begin
+insert into EHS.Seller values(@UserName,@FirstName,@LastName,@DateofBirth,@Address,@PhoneNo,@StateId,@CityId,@EmailId)
+end
+
+ exec EHS.usp_AddSeller 'SaiTeja','Sai','Teja','2008/12/25','Sipcot','9546123878',1,2,'ehs@gmail.com'
+ select * from EHS.Seller
+ select * from EHS.State
+----------------------------Buyer -----------------------------------------------------------------------------------
+create table EHS.Buyer
+(
+BuyerId int identity primary key, 
+UserName varchar(25) not null,
+FirstName varchar(25) not null, 
+LastName varchar(25), 
+DateOfBirth date not null, 
+PhoneNo varchar(10) not null, 
+EmailId varchar(50) not null
+)
+
+ create proc EHS.usp_AddBuyer
+ @BuyerId int, 
+ @UserName varchar(25),
+ @FirstName varchar(25),
+ @LastName varchar(25),
+ @dob date,
+ @PhoneNo varchar(10),
+ @Email varchar(50)
+ AS 
+ Begin
+ insert into EHS.Buyer values(@UserName,@FirstName,@LastName,@dob,@PhoneNo,@Email)
+ End
+
+
+----------------------------------Property Table------------------------------------------------------------------------
+ create table EHS.Property
+ (
+ PropertyId int identity primary key,
+ PropertyName varchar(50) not null, 
+ PropertyType varchar(15) not null, 
+ PropertyOption bit not null, 
+ IsVerified bit not null,
+ IsActive bit not null,
+ Description varchar(250),
+ Address varchar(250) not null, 
+ PriceRange money not null, 
+ InitialDeposit money not null, 
+ Landmark varchar(25) not null,
+ SellerId int,
+ Foreign key(SellerId) references  EHS.Seller(SellerId)
+
+ )
+
+--------------------------------------Property Proc-------------------------------------------------
